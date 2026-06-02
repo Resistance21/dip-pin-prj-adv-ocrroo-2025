@@ -28,7 +28,7 @@ Complete the steps below and fill in the `> block` sections
 ### Installing and running OpenCV
 
 1. Examine the `pyproject.toml` what dependencies does it currently identify?
-   > Currently the toml has as the dependenceis array is empty
+   > Currently the toml dependenceis array is empty
    > dependencies = []
 2. Create a `.venv` in this folder using `uv venv`
 3. Activate the `venv` as instructed by `uv`
@@ -41,17 +41,18 @@ Complete the steps below and fill in the `> block` sections
 - What is the `uv pip` command to install OpenCV?
   > `uv pip install opencv-python`
 - What is the URL of this library's git repo?
-  > [Insert URL Here](https://github.com/opencv/opencv-python)
+  > [opencv-python URL](https://github.com/opencv/opencv-python)
 
 1. Add OpenCV to your project using the `uv add` command:
 
-   > `uv add name-of-open-cv-library
+   > `uv add opencv-python
 
 1. Have the dependencies in the `pyproject.toml` changed? If so, how?
    > The dependencies have updated to
    > dependencies = [
-   > "opencv-python>=4.13.0.92",
-   > ]
+   >
+   > > "opencv-python>=4.13.0.92",
+   > > ]
 1. Why did we use `uv add` over `uv pip`?
    > We used uv add over uv pip becuase by using uv add, uv will automatically update the project toml file with its added dependencies
 1. The `numpy` library is required for OpenCV. Should you add an explicit requirement for it? Why/Why not?
