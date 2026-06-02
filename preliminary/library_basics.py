@@ -13,24 +13,25 @@ Make sure you read the docstrings C.A.R.E.F.U.L.Y (yes, I took the L to check th
 
 # imports - add all required imports here
 from pathlib import Path
-import cv2
+import cv2 as cv
 import numpy as np
+from PIL import Image
 
 
-VID_PATH = Path("resources/name-of-vid-given-to-you-by-instructor.mp4")
+VID_PATH = Path("resources/oop.mp4")
 
 class CodingVideo:
-    capture: cv2.VideoCapture
+    capture: cv.VideoCapture
 
 
     def __init__(self, video: Path | str):
-        self.capture = ... # You complete me!
+        self.capture = cv.VideoCapture(video)
         if not self.capture.isOpened():
             raise ValueError(f"Cannot open {video}")
 
-        self.fps = ...
-        self.frame_count = ...
-        self.duration = ...
+        self.fps = self.capture.get(cv.CAP_PROP_FPS)
+        self.frame_count = self.capture.get(cv.CAP_PROP_FRAME_COUNT)
+        self.duration = (self.frame_count / self.fps) / 60
 
 
     def __str__(self) -> str:
@@ -45,10 +46,11 @@ class CodingVideo:
         ----------
         https://docs.opencv.org/3.4/d4/d15/group__videoio__flags__base.html#gaeb8dd9c89c10a5c63c139bf7c4f5704d
         """
-
+        return f"The video has an FPS of {self.fps:.2f}, with a Frame Count of {self.frame_count}, with a Duration of {self.duration:.2f} minutes"
+    
     def get_frame_number_at_time(self, seconds: int) -> int:
         """Given a time in seconds, returns the value of the nearest frame"""
-
+        return round(seconds * self.fps)
 
     def get_frame_rgb_array(self, frame_number: int) -> np.ndarray:
         """Returns a numpy N-dimensional array (ndarray)
@@ -62,13 +64,16 @@ class CodingVideo:
         # TODO: Find a tutorial on OpenCV that demonstrates color space conversion
 
         """
+        self.capture.set(cv.CAP_PROP_POS_FRAMES, frame_number)
+        retrival, frame = self.capture.read()
+        return cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
     def get_image_as_bytes(self, seconds: int) -> bytes:
-        self.capture.set(cv2.CAP_PROP_POS_FRAMES, self.get_frame_number_at_time(seconds))
+        self.capture.set(cv.CAP_PROP_POS_FRAMES, self.get_frame_number_at_time(seconds))
         ok, frame = self.capture.read()
         if not ok or frame is None:
             raise ValueError("Invalid frame in target location")
-        ok, buf = cv2.imencode(".png", frame)
+        ok, buf = cv.imencode(".png", frame)
         if not ok:
             raise ValueError("Failed to encode frame")
         return buf.tobytes()
@@ -77,18 +82,27 @@ class CodingVideo:
 
 
     def save_as_image(self, seconds: int, output_path: Path | str = 'output.png') -> None:
-      """Saves the given frame as a png image
+        """Saves the given frame as a png image
 
-      # TODO: Requires a third-party library to convert ndarray to png
-      # TODO: Identify the library and add a reference to its documentation
+        # TODO: Requires a third-party library to convert ndarray to png
+        # TODO: Identify the library and add a reference to its documentation
+            Pillow is used for the convert ndarry to png 
+            Pillow docs 
+            https://pillow.readthedocs.io/en/stable/index.html
+            docs for the array convert 
+            https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.fromarray
+            saving the image
+            https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.save
+        """
+        image_array = self.get_frame_rgb_array(self.get_frame_number_at_time(seconds))
+        image = Image.fromarray(image_array)
+        image.save(output_path)
 
-
-      """
 def test():
     """Try out your class here"""
     oop = CodingVideo("resources/oop.mp4")
     print(oop)
-    oop.save_as_image(42)
+    oop.save_as_image(42, 'resources/output.png')
 
 if __name__ == '__main__':
     test()
