@@ -75,14 +75,17 @@ Tesseract consists of both an OCR Engine and a command line program. It is predo
 
 3. Select a Python wrapper. What wrapper did you choose and why? Ensure you address each element below in your answer
 
-   > name of the python library
+   > **name of the python library**  
    > pytesseract
-   > how long ago was a commit made to the library
+   >
+   > **how long ago was a commit made to the library**  
    > last year
-   > does it have external dependencies
-   > Pillow>=8.0.0
+   >
+   > **does it have external dependencies**  
+   > Pillow>=8.0.0  
    > packaging>=21.3
-   > how does it suite the project requirements
+   >
+   > **how does it suite the project requirements**  
    > This suits the project requirements as it give a wrapper for Tesseract OCR to work with python as well as making the use of Pillow since I am already using that for my image saving when getting a frame from the video
 
 4. Use UV to add the dependency to your project and your `pyproject.toml`
