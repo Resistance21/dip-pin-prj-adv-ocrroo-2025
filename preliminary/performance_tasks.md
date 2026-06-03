@@ -102,17 +102,47 @@ Tesseract consists of both an OCR Engine and a command line program. It is predo
 
 FastAPI will allow us to enable communication with our OCR service from other processes on the current machine or across a network.
 
-1. Add the requirement for FastAPI using UV. FastAPI has optional requirements so the command is a little different:
-   `uv add fastapi --extra standard`
-2. Commit the new dependency `chore: add FastAPI dependency`
-3. Run in development mode using:
-   `uv run fastapi dev preliminary/simple_api.py`
-4. Run the following curl command (may require git bash on Windows):
-   `curl 127.0.0.1:8000/video`
-5. Confirm that a list of videos and URLs is returned by copying the output below:
-   > Description
-6. What are the names of the two processes that just communicated?
-   >
-7. Modify the simple_api.py so that it works correctly with your implementation and complete any TODO markers
-8. Demonstrate the use of at least two other end points below:
-   >
+1.  Add the requirement for FastAPI using UV. FastAPI has optional requirements so the command is a little different:
+    `uv add fastapi --extra standard`
+2.  Commit the new dependency `chore: add FastAPI dependency`
+3.  Run in development mode using:
+    `uv run fastapi dev preliminary/simple_api.py`
+4.  Run the following curl command (may require git bash on Windows):
+    `curl 127.0.0.1:8000/video`
+5.  Confirm that a list of videos and URLs is returned by copying the output below:
+    > $ curl 127.0.0.1:8000/video  
+    > {"count":1,"videos":[{"id":"demo","path":"..\\resources\\oop.mp4","_links":{"self":"/video/demo","frame_example":"/video/demo/frame/1.0"}}]}(dip-pin-prj-adv-ocrroo-2025)
+6.  What are the names of the two processes that just communicated?
+    > The names of the two processes that just communicated are:  
+    > Curl and FastAPI
+7.  Modify the simple_api.py so that it works correctly with your implementation and complete any TODO markers
+8.  Demonstrate the use of at least two other end points below:
+
+    > First end point is /video/{vid}/second/{s}/ocr
+    >
+    > ```python
+    > @app.get("/video/{vid}/second/{s}/ocr", response_class=Response)
+    > def video_frame(vid: str, s: int):
+    >    try:
+    >
+    >
+    >        video = _open_vid_or_404(vid)
+    >        return Response(content=video.get_text_from_image_from_seconds(s))
+    >
+    > finally:
+    > if video is not None:
+    > video.capture.release()
+    > ```
+
+    > Second end point is /video/{vid}/frame/{f}/ocr
+    >
+    > ```python
+    > @app.get("/video/{vid}/frame/{f}/ocr", response_class=Response)
+    > def video_frame(vid: str, f: int):
+    >   try:
+    >      video = _open_vid_or_404(vid)
+    >     return Response(content=video.get_text_from_image_from_frame(f))
+    > finally:
+    > if video is not None:
+    >  video.capture.release()
+    > ```

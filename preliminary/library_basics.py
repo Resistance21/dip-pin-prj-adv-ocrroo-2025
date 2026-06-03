@@ -99,10 +99,15 @@ class CodingVideo:
         image = Image.fromarray(image_array)
         image.save(output_path)
 
-    def get_text_from_image(self, seconds: int):
+    def get_text_from_image_from_seconds(self, seconds: int):
         frame_number = self.get_frame_number_at_time(seconds)
         image = Image.fromarray(self.get_frame_rgb_array(frame_number))
         return pytesseract.image_to_string(image)
+    
+    def get_text_from_image_from_frame(self, frame: int):
+        image = Image.fromarray(self.get_frame_rgb_array(frame))
+        return pytesseract.image_to_string(image)
+
 
 def test():
     """Try out your class here"""
