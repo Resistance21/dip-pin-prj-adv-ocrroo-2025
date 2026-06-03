@@ -16,6 +16,7 @@ from pathlib import Path
 import cv2 as cv
 import numpy as np
 from PIL import Image
+import pytesseract
 
 
 VID_PATH = Path("resources/oop.mp4")
@@ -98,11 +99,17 @@ class CodingVideo:
         image = Image.fromarray(image_array)
         image.save(output_path)
 
+    def get_text_from_image(self, seconds: int):
+        frame_number = self.get_frame_number_at_time(seconds)
+        image = Image.fromarray(self.get_frame_rgb_array(frame_number))
+        return pytesseract.image_to_string(image)
+
 def test():
     """Try out your class here"""
     oop = CodingVideo("resources/oop.mp4")
     print(oop)
-    oop.save_as_image(42, 'resources/output.png')
+    oop.save_as_image(219, 'resources/output.png')
+    print(oop.get_text_from_image(219))
 
 if __name__ == '__main__':
     test()
