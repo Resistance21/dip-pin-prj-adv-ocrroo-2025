@@ -10,10 +10,18 @@ from fastapi import Response
 from pydantic import BaseModel
 from pathlib import Path
 from library_basics import CodingVideo
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # We'll create a lightweight "database" for our videos
 # You can add uploads later (not required for assessment)
@@ -78,6 +86,13 @@ def video(vid: str):
     finally:
         video.capture.release()
 
+@app.get("/video/{vid}/stream")
+def stream_video(vid: str):
+    path = VIDEOS.get(vid)
+    if not path or not path.is_file():
+        raise HTTPException(status_code=404, detail="Video not found")
+    return FileResponse(path, media_type="video/mp4")        
+
 
 @app.get("/video/{vid}/frame/{t}", response_class=Response)
 def video_frame(vid: str, t: float):
@@ -89,7 +104,7 @@ def video_frame(vid: str, t: float):
 
 # TODO: add enpoint to get ocr e.g. /video/{vid}/frame/{t}/ocr
 @app.get("/video/{vid}/second/{s}/ocr", response_class=Response)
-def video_frame(vid: str, s: int):
+def video_frame(vid: str, s: float):
     try:
         video = _open_vid_or_404(vid)
         return Response(content=video.get_text_from_image_from_seconds(s))
