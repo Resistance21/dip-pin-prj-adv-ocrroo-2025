@@ -1,16 +1,28 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, forwardRef } from "react";
+
+type Settings = {
+  fontSize: number;
+  colour: string;
+  backgroundColour: string;
+};
 
 type imageOutputTextComponentProps = {
   video: string;
   seconds: number;
+  settings: Settings;
 };
 
 const ImageOutputTextComponent = ({
   video,
   seconds,
+  settings,
 }: imageOutputTextComponentProps) => {
   const [text, setText] = useState<string>("");
+  const [ocrCount, setOcrCount] = useState<number>(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const { fontSize, colour, backgroundColour } = settings;
 
   useEffect(() => {
     const getOCRText = async () => {
@@ -19,9 +31,23 @@ const ImageOutputTextComponent = ({
       );
       const data = await response.text();
       setText(data);
-      console.log(data);
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      }
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (wrapperRef.current) {
+            wrapperRef.current.scrollIntoView({
+              behavior: "smooth",
+              block: "end",
+            });
+          }
+        });
+      });
     };
     getOCRText();
+    console.log("wrapperRef", wrapperRef.current);
   }, [video, seconds]);
 
   useEffect(() => {
@@ -32,14 +58,19 @@ const ImageOutputTextComponent = ({
   }, [text]);
 
   return (
-    <div>
+    <div ref={wrapperRef}>
       <textarea
         key={"ocr text area"}
         id="ocr text area"
-        className="w-full min-h-12 max-h-96 overflow-y-auto resize-none"
+        className={`w-full min-h-50 max-h-96 overflow-y-auto resize-none border-t-2 border-b-2 border-indigo-600 text-[${fontSize}] decoration-[${colour}] bg-[${backgroundColour}]`}
         readOnly
         defaultValue={text}
         ref={textareaRef}
+        style={{
+          fontSize: `${fontSize}px`,
+          color: colour,
+          backgroundColor: backgroundColour,
+        }}
       />
     </div>
   );
